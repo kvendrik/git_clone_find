@@ -6,14 +6,11 @@
 
 ## Setup
 
-1. Install through [Homebrew](https://brew.sh/).
-```
-brew install gccd
-```
-
-2. Export all your Github usernames in your local rc file.
+1. Clone this repository.
+2. In your local rc file export all your preferred Github usernames (see help message) and source the `gccd` file.
 ```bash
 export GCCD_GITHUB_USERNAMES=('kvendrik' 'my_org1' 'my_org2')
+source path_to_this_repo/gccd
 ```
 
 ## Help
