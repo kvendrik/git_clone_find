@@ -12,7 +12,7 @@ brew install gccd
 ```
 
 2. Export all your Github usernames in your local rc file.
-```
+```bash
 export GCCD_GITHUB_USERNAMES=('kvendrik' 'my_org1' 'my_org2')
 ```
 
