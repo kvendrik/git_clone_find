@@ -7,15 +7,21 @@ jobs:
       - checkout
       - run:
           name: Linting
-          command: make lint
+          command: shellcheck git_clone_find
   test:
     docker:
-      - image: bats/bats:stable
+      - image: buildpack-deps:trusty
     steps:
       - checkout
       - run:
+          name: Install Dependencies
+          command: |
+            git clone https://github.com/sstephenson/bats.git
+            cd bats
+            ./install.sh /usr/local
+      - run:
           name: Unit Tests
-          command: make test
+          command: bats git_clone_find.bats
 
 workflows:
   version: 2

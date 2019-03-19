@@ -4,7 +4,7 @@
 
 - Git clones and moves into the folder.
 - Allows for simple `username/repo_name` syntax to clone (with Github).
-- Allows for only a `repo_name` which will make it check all your configured Github usernames.
+- Allows for only a `repo_name` which will make it search through all your configured Github usernames.
 
 <img src="https://github.com/kvendrik/git_clone_cd/raw/master/demo.gif" width="100%" />
 
@@ -16,7 +16,7 @@
 export GCF_GITHUB_USERNAMES=('kvendrik' 'my_org1' 'my_org2')
 source path_to_this_repo/git_clone_find
 ```
-3. Add an alias of your chosing to your rc to make interacting with the CLI quicker.
+3. Add an alias of your choosing to your rc to make interacting with the CLI quicker.
 ```bash
 alias gcf='git_clone_find'
 ```
@@ -42,5 +42,6 @@ Arguments:
 
 ## 🏗 Contibuting
 1. Make your changes.
-1. Run `./lint` to run the linter on them.
+1. Run `make lint` to lint your changes and `make test` to test them.
+1. Add the appropriate tests.
 1. Create a PR.
