@@ -16,7 +16,7 @@
 export GCF_GITHUB_USERNAMES=('kvendrik' 'my_org1' 'my_org2')
 source path_to_this_repo/git_clone_find
 ```
-3. You might wanna add an alias of your chosing to your rc to make interacting with the CLI quicker.
+3. Add an alias of your chosing to your rc to make interacting with the CLI quicker.
 ```bash
 alias gfc='git_clone_find'
 ```
