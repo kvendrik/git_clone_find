@@ -1,6 +1,6 @@
-# git_clone_cd
+# git_clone_find
 
-[![CircleCI](https://circleci.com/gh/kvendrik/git_clone_cd.svg?style=svg)](https://circleci.com/gh/kvendrik/git_clone_cd)
+[![CircleCI](https://circleci.com/gh/kvendrik/git_clone_find.svg?style=svg)](https://circleci.com/gh/kvendrik/git_clone_find)
 
 - Git clones and moves into the folder.
 - Allows for simple `username/repo_name` syntax to clone (with Github).
@@ -20,7 +20,7 @@ source path_to_this_repo/gccd
 ```
 Usage: gccd [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
 
-Git clones and moves into the folder.
+Finds Git repositories, clones them and moves into the folder.
 
 Flags:
 

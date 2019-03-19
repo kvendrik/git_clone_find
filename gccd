@@ -8,7 +8,7 @@ gccd() {
   cat << EOF
 Usage: gccd [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
 
-Git clones and moves into the folder.
+Finds Git repositories, clones them and moves into the folder.
 
 Flags:
 
