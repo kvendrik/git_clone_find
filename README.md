@@ -30,8 +30,8 @@ Flags:
 
 Arguments:
   
-  ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GITHUB_USERNAME
-                               and GITHUB_ORGS_USERNAMES) or repository identifier (e.g. kvendrik/dotfiles)
+  ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GCCD_GITHUB_USERNAMES)
+                               or repository identifier (e.g. kvendrik/dotfiles)
   folder_name:                 Name of the folder it should clone into. Defaults to the name of the repository.
 ```
 
