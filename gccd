@@ -1,109 +1,106 @@
 #!/usr/bin/env bash
 
-function gccd(){
-  local verbose=false
-  local first_log=true
+verbose=false
+first_log=true
 
-  local print_help() {
-    cat << EOF
+print_help() {
+  cat << EOF
 Usage: gccd [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
 
 Git clones and moves into the folder.
 
 Flags:
 
-  -h | --help                  Display this help message
-  -v | --verbose               Verbose mode
+-h | --help                  Display this help message
+-v | --verbose               Verbose mode
 
 Arguments:
-  
-  ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GCCD_GITHUB_USERNAMES)
-                               or repository identifier (e.g. kvendrik/dotfiles)
-  folder_name:                 Name of the folder it should clone into. Defaults to the name of the repository.
+
+ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GCCD_GITHUB_USERNAMES)
+                             or repository identifier (e.g. kvendrik/dotfiles)
+folder_name:                 Name of the folder it should clone into. Defaults to the name of the repository.
 EOF
-  }
+}
 
-  local function log() {
-    if [[ "$verbose" == true && $first_log == false ]]; then
-      echo -e "\n$1"
-    else
-      echo -e $1
-    fi
-    first_log=false
-  }
-
-  local function git_clone() {
-    if [[ "$verbose" == true ]]; then
-      git clone $1 $2
-    else
-      git clone $1 $2 &> /dev/null
-    fi
-  }
-
-  if [[ -z "$1" || "$1" == '-h' || "$1" == '--help' ]]; then
-    print_help
-    return
+log() {
+  if [[ "$verbose" == true && $first_log == false ]]; then
+    echo -e "\n$1"
+  else
+    echo -e $1
   fi
+  first_log=false
+}
 
-  local repo_name_url=$1
-  local folder_name=$2
-  local final_folder_name
-
-  if [[ "$1" == '-v' || "$1" == '--verbose' ]]; then
-    verbose=true
-    repo_name_url=$2
-    folder_name=$3
+git_clone() {
+  if [[ "$verbose" == true ]]; then
+    git clone $1 $2
+  else
+    git clone $1 $2 &> /dev/null
   fi
+}
 
-  if [[ $repo_name_url =~ ^git@ ]]; then
-    if [[ -z "$folder_name" ]]; then
-      final_folder_name="$(basename $repo_name_url | sed -e 's/\.git//g')"
-    else
-      final_folder_name="$folder_name"
-    fi
+if [[ -z "$1" || "$1" == '-h' || "$1" == '--help' ]]; then
+  print_help
+  exit 0
+fi
 
-    verbose=true
-    git_clone $1 $final_folder_name && cd $final_folder_name
-    return
-  fi
+repo_name_url=$1
+folder_name=$2
 
-  IFS='/'
-  read -rA repo_name_from_split <<< "$repo_name_url"
-  
-  if [ "${repo_name_from_split[2]}" != '' ]; then
-    # split found, this means the user used the org_name/repo_name format
-    local split_username="${repo_name_from_split[1]}"
-    local split_repo_name="${repo_name_from_split[2]}"
+if [[ "$1" == '-v' || "$1" == '--verbose' ]]; then
+  verbose=true
+  repo_name_url=$2
+  folder_name=$3
+fi
 
-    if [[ -z "$folder_name" ]]; then
-      final_folder_name="$split_repo_name"
-    else
-      final_folder_name="$folder_name"
-    fi
-
-    local clone_url="git@github.com:$split_username/$split_repo_name.git"
-    log "Trying $clone_url. \e[2mCloning into $final_folder_name.\e[0m"
-
-    verbose=true
-    git_clone $clone_url $final_folder_name && cd $final_folder_name
-    return
-  fi
-
+if [[ $repo_name_url =~ ^git@ ]]; then
   if [[ -z "$folder_name" ]]; then
-    final_folder_name="$repo_name_url"
+    final_folder_name="$(basename $repo_name_url | sed -e 's/\.git//g')"
   else
     final_folder_name="$folder_name"
   fi
 
-  for username in "${GCCD_GITHUB_USERNAMES[@]}"; do
-    local clone_url="git@github.com:$username/$repo_name_url.git"
-    log "Trying $clone_url. \e[2mCloning into $final_folder_name.\e[0m"
+  verbose=true
+  git_clone $1 $final_folder_name && cd $final_folder_name
+  exit 0
+fi
 
-    if git_clone $clone_url $final_folder_name; then
-      cd $final_folder_name
-      return
-    fi
-  done
+split_repo_name="$(echo $repo_name_url | awk -F "/" '{print $2}')"
 
-  log "$repo_name_url could not be found"
-}
+if [ "$split_repo_name" != '' ]; then
+  if [[ -z "$folder_name" ]]; then
+    final_folder_name="$split_repo_name"
+  else
+    final_folder_name="$folder_name"
+  fi
+
+  clone_url="git@github.com:$repo_name_url.git"
+  log "Trying $clone_url. \e[2mCloning into $final_folder_name.\e[0m"
+
+  verbose=true
+  git_clone $clone_url $final_folder_name && cd $final_folder_name
+  exit 0
+fi
+
+if [[ -z "${GCCD_GITHUB_USERNAMES}" ]]; then
+  echo 'Repository identifier is non-specific and GCCD_GITHUB_USERNAMES is not defined.'
+  exit 1
+fi
+
+if [[ -z "$folder_name" ]]; then
+  final_folder_name="$repo_name_url"
+else
+  final_folder_name="$folder_name"
+fi
+
+for username in "${GCCD_GITHUB_USERNAMES[@]}"; do
+  clone_url="git@github.com:$username/$repo_name_url.git"
+  log "Trying $clone_url. \e[2mCloning into $final_folder_name.\e[0m"
+
+  if git_clone $clone_url $final_folder_name; then
+    cd $final_folder_name
+    exit 0
+  fi
+done
+
+log "$repo_name_url could not be found"

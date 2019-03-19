@@ -7,8 +7,4 @@ if [[ -z "$(command -v shellcheck)" ]]; then
   fi
 fi
 
-all_files=$(ls -pa | grep -v / | sed /README.md/d | tr '\n' ' ')
-
-echo "Checking $all_files"
-
-shellcheck $all_files
+shellcheck gccd
