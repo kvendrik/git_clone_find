@@ -34,3 +34,8 @@ Arguments:
                                and GITHUB_ORGS_USERNAMES) or repository identifier (e.g. kvendrik/dotfiles)
   folder_name:                 Name of the folder it should clone into. Defaults to the name of the repository.
 ```
+
+## 🏗 Contibuting
+1. Make your changes.
+1. Run `./lint` to run the linter on them.
+1. Create a PR.
