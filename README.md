@@ -1,5 +1,7 @@
 # git_clone_cd
 
+[![CircleCI](https://circleci.com/gh/kvendrik/git_clone_cd.svg?style=svg)](https://circleci.com/gh/kvendrik/git_clone_cd)
+
 - Git clones and moves into the folder.
 - Allows for simple `username/repo_name` syntax to clone (with Github).
 - Allows for only a `repo_name` which will make it check all your configured Github usernames.
