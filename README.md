@@ -18,7 +18,7 @@ source path_to_this_repo/git_clone_find
 ```
 3. Add an alias of your chosing to your rc to make interacting with the CLI quicker.
 ```bash
-alias gfc='git_clone_find'
+alias gcf='git_clone_find'
 ```
 
 ## Help
