@@ -11,14 +11,14 @@
 ## Setup
 
 1. Clone this repository.
-2. In your local rc file export all your preferred Github usernames (see help message) and source the `git_clone_find` file.
+2. In your local rc file export all your preferred Github usernames (see help message) and source `git_clone_find`.
 ```bash
 export GCF_GITHUB_USERNAMES=('kvendrik' 'my_org1' 'my_org2')
 source path_to_this_repo/git_clone_find
 ```
-3. You might wanna add an alias of your chosing to your rc to make interacting with the CLI quicker.
+3. Add an alias of your chosing to your rc to make interacting with the CLI quicker.
 ```bash
-alias gfc='git_clone_find'
+alias gcf='git_clone_find'
 ```
 
 ## Help
