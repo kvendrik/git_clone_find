@@ -11,16 +11,20 @@
 ## Setup
 
 1. Clone this repository.
-2. In your local rc file export all your preferred Github usernames (see help message) and source the `gccd` file.
+2. In your local rc file export all your preferred Github usernames (see help message) and source the `git_clone_find` file.
 ```bash
-export GCCD_GITHUB_USERNAMES=('kvendrik' 'my_org1' 'my_org2')
-source path_to_this_repo/gccd
+export GCF_GITHUB_USERNAMES=('kvendrik' 'my_org1' 'my_org2')
+source path_to_this_repo/git_clone_find
+```
+3. You might wanna add an alias of your chosing to your rc to make interacting with the CLI quicker.
+```bash
+alias gfc='git_clone_find'
 ```
 
 ## Help
 
 ```
-Usage: gccd [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
+Usage: git_clone_find [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
 
 Finds Git repositories, clones them and moves into the folder.
 
@@ -31,7 +35,7 @@ Flags:
 
 Arguments:
   
-  ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GCCD_GITHUB_USERNAMES)
+  ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GCF_GITHUB_USERNAMES)
                                or repository identifier (e.g. kvendrik/dotfiles)
   folder_name:                 Name of the folder it should clone into. Defaults to the name of the repository.
 ```

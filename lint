@@ -7,4 +7,4 @@ if [[ -z "$(command -v shellcheck)" ]]; then
   fi
 fi
 
-shellcheck gccd
+shellcheck git_clone_find

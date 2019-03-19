@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-gccd() {
+git_clone_find() {
   verbose=false
   first_log=true
 
   print_help() {
   cat << EOF
-Usage: gccd [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
+Usage: git_clone_find [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
 
 Finds Git repositories, clones them and moves into the folder.
 
@@ -17,7 +17,7 @@ Flags:
 
 Arguments:
 
-ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GCCD_GITHUB_USERNAMES)
+ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GCF_GITHUB_USERNAMES)
                             or repository identifier (e.g. kvendrik/dotfiles)
 folder_name:                 Name of the folder it should clone into. Defaults to the name of the repository.
 
@@ -85,8 +85,8 @@ EOF
     return
   fi
 
-  if [[ -z "${GCCD_GITHUB_USERNAMES}" ]]; then
-    echo 'Repository identifier is non-specific and GCCD_GITHUB_USERNAMES is not defined.'
+  if [[ -z "${GCF_GITHUB_USERNAMES}" ]]; then
+    echo 'Repository identifier is non-specific and GCF_GITHUB_USERNAMES is not defined.'
     return
   fi
 
@@ -96,7 +96,7 @@ EOF
     final_folder_name="$folder_name"
   fi
 
-  for username in "${GCCD_GITHUB_USERNAMES[@]}"; do
+  for username in "${GCF_GITHUB_USERNAMES[@]}"; do
     clone_url="git@github.com:$username/$repo_name_url.git"
     log "Trying $clone_url. \e[2mCloning into $final_folder_name.\e[0m"
 
