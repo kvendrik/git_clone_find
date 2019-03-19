@@ -6,6 +6,8 @@
 - Allows for simple `username/repo_name` syntax to clone (with Github).
 - Allows for only a `repo_name` which will make it check all your configured Github usernames.
 
+<img src="https://github.com/kvendrik/git_clone_cd/raw/master/demo.gif" width="100%" />
+
 ## Setup
 
 1. Clone this repository.
