@@ -7,10 +7,19 @@ jobs:
       - checkout
       - run:
           name: Linting
-          command: ./lint
+          command: make lint
+  test:
+    docker:
+      - image: bats/bats:stable
+    steps:
+      - checkout
+      - run:
+          name: Unit Tests
+          command: make test
 
 workflows:
   version: 2
   workflow:
     jobs:
       - lint
+      - test

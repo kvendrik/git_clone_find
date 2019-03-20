@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+if [[ -z "$1" || -z "$2" ]]; then
+  echo 'Usage: check_command <command_name> <installation_help_url>'
+  exit 1
+fi
+
+if [[ -z "$(command -v $1)" ]]; then
+  if ! brew install $1; then
+    echo "$1 not found and failed to install through brew. Check $2 for instructions on how to install $1."
+    exit 1
+  fi
+fi
