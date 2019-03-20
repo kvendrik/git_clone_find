@@ -10,15 +10,9 @@ jobs:
           command: shellcheck git_clone_find
   test:
     docker:
-      - image: buildpack-deps:trusty
+      - image: bats/bats:v1.1.0
     steps:
       - checkout
-      - run:
-          name: Install Dependencies
-          command: |
-            git clone https://github.com/sstephenson/bats.git
-            cd bats
-            ./install.sh /usr/local
       - run:
           name: Unit Tests
           command: bats git_clone_find.bats
