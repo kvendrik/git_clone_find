@@ -5,7 +5,7 @@ git_clone_find() {
   first_log=true
 
   print_help() {
-  cat << EOF
+    cat << EOF
 Usage: git_clone_find [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
 
 Finds Git repositories, clones them and moves into the folder.
@@ -64,7 +64,7 @@ EOF
     fi
 
     verbose=true
-    git_clone "$1" "$final_folder_name" && cd "$final_folder_name" || exit 1
+    git_clone "$1" "$final_folder_name" && cd "$final_folder_name" || return
     return
   fi
 
@@ -81,7 +81,7 @@ EOF
     log "Trying $clone_url. \e[2mCloning into $final_folder_name.\e[0m"
 
     verbose=true
-    git_clone "$clone_url" "$final_folder_name" && cd "$final_folder_name" || exit 1
+    git_clone "$clone_url" "$final_folder_name" && cd "$final_folder_name" || return
     return
   fi
 
@@ -101,10 +101,10 @@ EOF
     log "Trying $clone_url. \e[2mCloning into $final_folder_name.\e[0m"
 
     if git_clone "$clone_url" "$final_folder_name"; then
-      cd "$final_folder_name" || exit 1
+      cd "$final_folder_name" || return
       return
     fi
   done
 
-  log "$repo_name_url could not be found"
+  log "$repo_name_url could not be cloned. This usually means the repository could not be found. Run the command again with the --verbose flag for more info."
 }
