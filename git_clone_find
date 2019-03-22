@@ -58,7 +58,7 @@ EOF
 
     if [[ "$argument" == '--help' || "$argument" == '-h' ]]; then
       print_help
-      return
+      return 0
     fi
 
     arguments+=("$argument")
@@ -69,7 +69,7 @@ EOF
 
   if [ -z "$repo_ssh_url" ]; then
     print_help
-    return
+    return 0
   fi
 
   if [[ $repo_ssh_url =~ ^git@ ]]; then
@@ -78,8 +78,8 @@ EOF
     fi
 
     verbose=true
-    git_clone "$repo_ssh_url" "$folder_name" && cd "$folder_name" || return
-    return
+    git_clone "$repo_ssh_url" "$folder_name" && cd "$folder_name" || return 1
+    return 0
   fi
 
   repo_id="$repo_ssh_url"
@@ -94,13 +94,13 @@ EOF
     log "Trying $clone_url. \e[2mCloning into $folder_name.\e[0m"
 
     verbose=true
-    git_clone "$clone_url" "$folder_name" && cd "$folder_name" || return
-    return
+    git_clone "$clone_url" "$folder_name" && cd "$folder_name" || return 1
+    return 0
   fi
 
   if [[ -z "${GCF_GITHUB_USERNAMES}" ]]; then
     echo 'Repository identifier is non-specific and GCF_GITHUB_USERNAMES is not defined.'
-    return
+    return 1
   fi
 
   repo_name="$repo_id"
@@ -114,10 +114,11 @@ EOF
     log "Trying $clone_url. \e[2mCloning into $folder_name.\e[0m"
 
     if git_clone "$clone_url" "$folder_name"; then
-      cd "$folder_name" || return
-      return
+      cd "$folder_name" || return 1
+      return 0
     fi
   done
 
   log "$repo_name could not be cloned. This usually means the repository could not be found. Run the command again with the --verbose flag for more info."
+  return 1
 }
