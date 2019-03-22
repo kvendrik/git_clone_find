@@ -93,8 +93,30 @@ cd() { echo "cd $1"; }
   [ $(expr "${lines[0]}" : ".*Cloning into dotfiles") -ne 0 ]
 }
 
-# @todo: add test that makes sure all usernames are being tried
-# @todo: add test that tests case where no usernames came up with results
+@test "Repository name: tries to clone from all given usernames" {
+  export GCF_GITHUB_USERNAMES=('kvendrik' 'my_org' 'my_org2')
+  git() { echo "git $1 $2 $3"; $(exit 1); }
+  run git_clone_find -v dotfiles
+  [ "${lines[1]}" == "git clone git@github.com:kvendrik/dotfiles.git dotfiles" ]
+  [ "${lines[3]}" == "git clone git@github.com:my_org/dotfiles.git dotfiles" ]
+  [ "${lines[5]}" == "git clone git@github.com:my_org2/dotfiles.git dotfiles" ]
+}
+
+@test "Repository name: uses custom folder name for each try" {
+  export GCF_GITHUB_USERNAMES=('kvendrik' 'my_org' 'my_org2')
+  git() { echo "git $1 $2 $3"; $(exit 1); }
+  run git_clone_find -v dotfiles my_custom_folder
+  [ "${lines[1]}" == "git clone git@github.com:kvendrik/dotfiles.git my_custom_folder" ]
+  [ "${lines[3]}" == "git clone git@github.com:my_org/dotfiles.git my_custom_folder" ]
+  [ "${lines[5]}" == "git clone git@github.com:my_org2/dotfiles.git my_custom_folder" ]
+}
+
+@test "Repository name: displays error message with actionable item when all tries fail" {
+  export GCF_GITHUB_USERNAMES=('kvendrik' 'my_org' 'my_org2')
+  git() { $(exit 1); }
+  run git_clone_find dotfiles
+  [ "${lines[3]}" == "dotfiles could not be cloned. This usually means the repository could not be found. Run the command again with the --verbose flag for more info." ]
+}
 
 @test "Repository name: hides git clone ouput by default" {
   export GCF_GITHUB_USERNAMES=('kvendrik')
