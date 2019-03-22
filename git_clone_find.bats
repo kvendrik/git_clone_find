@@ -5,13 +5,23 @@ source ./git_clone_find
 git() { echo "git $1 $2 $3"; }
 cd() { echo "cd $1"; }
 
-@test "Help Flag: prints help message when --help flag is given" {
+@test "Help: prints help message when --help flag is given" {
   run git_clone_find --help
   [ $(expr "${lines[0]}" : "Usage:.*") -ne 0 ]
 }
 
-@test "Help Flag: prints help message when -h flag is given" {
+@test "Help: prints help message when -h flag is given" {
   run git_clone_find -h
+  [ $(expr "${lines[0]}" : "Usage:.*") -ne 0 ]
+}
+
+@test "Help: prints help message when flag and other arguments are given" {
+  run git_clone_find git@github.com:kvendrik/dotfiles.git -h
+  [ $(expr "${lines[0]}" : "Usage:.*") -ne 0 ]
+}
+
+@test "Help: prints help message when no arguments are given" {
+  run git_clone_find
   [ $(expr "${lines[0]}" : "Usage:.*") -ne 0 ]
 }
 
