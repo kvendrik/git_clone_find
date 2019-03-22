@@ -43,6 +43,13 @@ EOF
     fi
   }
 
+  get_argument() {
+    # fixes bug caused by ZSH arrays starting at index 1
+    # and Bash arrays starting at index 0
+    # more info: https://unix.stackexchange.com/questions/252368/is-there-a-reason-why-the-first-element-of-a-zsh-array-is-indexed-by-1-instead-o
+    [[ "${arguments[0]}" == '' && "${arguments[1]}" != '' ]] && echo "${arguments[(($1+1))]}" || echo "${arguments[$1]}"
+  }
+
   for argument in "$@"; do
     if [[ "$argument" == '--verbose' || "$argument" == '-v' ]]; then
       verbose=true
@@ -57,11 +64,8 @@ EOF
     arguments+=("$argument")
   done
 
-  # fixes bug caused by ZSH arrays starting at index 1
-  # and Bash arrays starting at index 0
-  # more info: https://unix.stackexchange.com/questions/252368/is-there-a-reason-why-the-first-element-of-a-zsh-array-is-indexed-by-1-instead-o
-  repo_name_url=$([ -z "${arguments[0]}" ] && echo "${arguments[1]}" || echo "${arguments[0]}")
-  folder_name=$([[ "${arguments[1]}" == "$repo_name_url" ]] && echo "${arguments[2]}" || echo "${arguments[1]}")
+  repo_name_url=$(get_argument 0)
+  folder_name=$(get_argument 1)
 
   if [ -z "$repo_name_url" ]; then
     print_help
