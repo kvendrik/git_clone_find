@@ -15,6 +15,7 @@ Flags:
 
 -h | --help                  Display this help message
 -v | --verbose               Verbose mode
+--version                    Display the CLI's version
 
 Arguments:
 
@@ -58,6 +59,12 @@ EOF
 
     if [[ "$argument" == '--help' || "$argument" == '-h' ]]; then
       print_help
+      return 0
+    fi
+
+    if [[ "$argument" == '--version' ]]; then
+      SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
+      cat "$SCRIPT_PATH/.version"
       return 0
     fi
 

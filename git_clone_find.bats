@@ -29,6 +29,13 @@ cd() { echo "cd $1"; }
   [ $(expr "${lines[0]}" : "Usage:.*") -ne 0 ]
 }
 
+@test "Version: prints the version when the version flag is given" {
+  run git_clone_find --version
+  version="$(cat "$(pwd)/.version")"
+  [ "$status" == 0 ]
+  [ "$output" == "$version" ]
+}
+
 @test "SSH URLs: supports cloning using simple ssh urls" {
   run git_clone_find git@github.com:kvendrik/dotfiles.git
   [ "$status" == 0 ]
