@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 
-git_clone_find() {
-  verbose=false
-  first_log=true
-  arguments=()
+verbose=false
+first_log=true
+arguments=()
 
-  print_help() {
-    cat << EOF
+print_help() {
+  cat << EOF
 Usage: git_clone_find [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
 
 Finds Git repositories, clones them and moves into the folder.
@@ -19,113 +18,118 @@ Flags:
 
 Arguments:
 
-ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GCF_GITHUB_USERNAMES)
-                            or repository identifier (e.g. kvendrik/dotfiles)
+ssh_url_or_repo_name:        A SHH clone URL, repository name (will search through your set GCF_USERNAMES)
+                             or repository identifier (e.g. kvendrik/dotfiles)
 folder_name:                 Name of the folder it should clone into. Defaults to the name of the repository.
 
 Check out https://github.com/kvendrik/git_clone_find for more info.
 EOF
-  }
-
-  log() {
-    if [[ "$verbose" == true && $first_log == false ]]; then
-      echo -e "\n$1"
-    else
-      echo -e "$1"
-    fi
-    first_log=false
-  }
-
-  git_clone() {
-    if [[ "$verbose" == true ]]; then
-      git clone "$1" "$2"
-    else
-      git clone "$1" "$2" &> /dev/null
-    fi
-  }
-
-  get_argument() {
-    # fixes bug caused by ZSH arrays starting at index 1
-    # and Bash arrays starting at index 0
-    # more info: https://unix.stackexchange.com/questions/252368/is-there-a-reason-why-the-first-element-of-a-zsh-array-is-indexed-by-1-instead-o
-    [[ "${arguments[0]}" == '' && "${arguments[1]}" != '' ]] && echo "${arguments[(($1+1))]}" || echo "${arguments[$1]}"
-  }
-
-  for argument in "$@"; do
-    if [[ "$argument" == '--verbose' || "$argument" == '-v' ]]; then
-      verbose=true
-      continue
-    fi
-
-    if [[ "$argument" == '--help' || "$argument" == '-h' ]]; then
-      print_help
-      return 0
-    fi
-
-    if [[ "$argument" == '--version' ]]; then
-      SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
-      cat "$SCRIPT_PATH/.version"
-      return 0
-    fi
-
-    arguments+=("$argument")
-  done
-
-  repo_ssh_url=$(get_argument 0)
-  folder_name=$(get_argument 1)
-
-  if [ -z "$repo_ssh_url" ]; then
-    print_help
-    return 0
-  fi
-
-  if [[ $repo_ssh_url =~ ^git@ ]]; then
-    if [[ -z "$folder_name" ]]; then
-      folder_name="$(basename "$repo_ssh_url" | sed -e 's/\.git//g')"
-    fi
-
-    verbose=true
-    git_clone "$repo_ssh_url" "$folder_name" && cd "$folder_name" || return 1
-    return 0
-  fi
-
-  repo_id="$repo_ssh_url"
-  split_repo_name="$(echo "$repo_id" | awk -F "/" '{print $2}')"
-
-  if [ "$split_repo_name" != '' ]; then
-    if [[ -z "$folder_name" ]]; then
-      folder_name="$split_repo_name"
-    fi
-
-    clone_url="git@github.com:$repo_id.git"
-    log "Trying $clone_url. \e[2mCloning into $folder_name.\e[0m"
-
-    verbose=true
-    git_clone "$clone_url" "$folder_name" && cd "$folder_name" || return 1
-    return 0
-  fi
-
-  if [[ -z "${GCF_GITHUB_USERNAMES}" ]]; then
-    echo 'Repository identifier is non-specific and GCF_GITHUB_USERNAMES is not defined.'
-    return 1
-  fi
-
-  repo_name="$repo_id"
-
-  if [[ -z "$folder_name" ]]; then
-    folder_name="$repo_name"
-  fi
-
-  for username in "${GCF_GITHUB_USERNAMES[@]}"; do
-    clone_url="git@github.com:$username/$repo_name.git"
-    log "Trying $clone_url. \e[2mCloning into $folder_name.\e[0m"
-
-    if git_clone "$clone_url" "$folder_name"; then
-      cd "$folder_name" || return 1
-      return 0
-    fi
-  done
-
-  log "$repo_name could not be cloned. This usually means the repository could not be found. Run the command again with the --verbose flag for more info."
-  return 1
 }
+
+log() {
+  if [[ "$verbose" == true && $first_log == false ]]; then
+    echo -e "\n$1"
+  else
+    echo -e "$1"
+  fi
+  first_log=false
+}
+
+git_clone() {
+  if [[ "$verbose" == true ]]; then
+    git clone "$1" "$2"
+  else
+    git clone "$1" "$2" &> /dev/null
+  fi
+}
+
+get_argument() {
+  # fixes bug caused by ZSH arrays starting at index 1
+  # and Bash arrays starting at index 0
+  # more info: https://unix.stackexchange.com/questions/252368/is-there-a-reason-why-the-first-element-of-a-zsh-array-is-indexed-by-1-instead-o
+  [[ "${arguments[0]}" == '' && "${arguments[1]}" != '' ]] && echo "${arguments[(($1+1))]}" || echo "${arguments[$1]}"
+}
+
+construct_clone_url() {
+  echo "git@github.com:$1.git"
+}
+
+for argument in "$@"; do
+  if [[ "$argument" == '--verbose' || "$argument" == '-v' ]]; then
+    verbose=true
+    continue
+  fi
+
+  if [[ "$argument" == '--help' || "$argument" == '-h' ]]; then
+    print_help
+    exit 0
+  fi
+
+  if [[ "$argument" == '--version' ]]; then
+    SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
+    cat "$SCRIPT_PATH/.version"
+    exit 0
+  fi
+
+  arguments+=("$argument")
+done
+
+repo_ssh_url=$(get_argument 0)
+folder_name=$(get_argument 1)
+
+if [ -z "$repo_ssh_url" ]; then
+  print_help
+  exit 0
+fi
+
+if [[ $repo_ssh_url =~ ^git@ ]]; then
+  if [[ -z "$folder_name" ]]; then
+    folder_name="$(basename "$repo_ssh_url" | sed -e 's/\.git//g')"
+  fi
+
+  verbose=true
+  git_clone "$repo_ssh_url" "$folder_name" && cd "$folder_name" || exit 1
+  exit 0
+fi
+
+repo_id="$repo_ssh_url"
+split_repo_name="$(echo "$repo_id" | awk -F "/" '{print $2}')"
+
+if [ "$split_repo_name" != '' ]; then
+  if [[ -z "$folder_name" ]]; then
+    folder_name="$split_repo_name"
+  fi
+
+  clone_url=$(construct_clone_url "$repo_id")
+  log "Trying $clone_url. \e[2mCloning into $folder_name.\e[0m"
+
+  verbose=true
+  git_clone "$clone_url" "$folder_name" && cd "$folder_name" || exit 1
+  exit 0
+fi
+
+if [[ -z "${GCF_USERNAMES}" ]]; then
+  echo 'Repository identifier is non-specific and GCF_USERNAMES is not defined.'
+  exit 1
+fi
+
+repo_name="$repo_id"
+
+if [[ -z "$folder_name" ]]; then
+  folder_name="$repo_name"
+fi
+
+usernames=($GCF_USERNAMES)
+
+for username in "${usernames[@]}"; do
+  clone_url=$(construct_clone_url "$username/$repo_name")
+  log "Trying $clone_url. \033[0;36mCloning into $folder_name.\033[0m"
+
+  if git_clone "$clone_url" "$folder_name"; then
+    cd "$folder_name" || exit 1
+    exit 0
+  fi
+done
+
+log "\033[0;31m$repo_name could not be cloned. This usually means the repository could not be found. Run the command again with the --verbose flag for more info.\033[0m"
+exit 1
