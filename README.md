@@ -2,24 +2,30 @@
 
 [![CircleCI](https://circleci.com/gh/kvendrik/git_clone_find.svg?style=svg)](https://circleci.com/gh/kvendrik/git_clone_find)
 
-- Git clones and moves into the folder.
-- Allows for simple `username/repo_name` syntax to clone (with Github).
-- Allows for only a `repo_name` which will make it search through all your configured Github usernames.
+- Allows for simple `username/repository_name` syntax to clone (with Github).
+- Allows for only a repository name which will make it search through all your configured Github usernames.
 
 <img src="https://github.com/kvendrik/git_clone_cd/raw/master/demo.gif" width="100%" />
 
 ## Setup
 
 1. Clone this repository.
-2. In your local rc file export all your preferred Github usernames (see help message) and source `git_clone_find`.
+2. In your local rc file export all your preferred Github usernames (see help message) and add the repository directory to your `PATH`.
 ```bash
-export GCF_GITHUB_USERNAMES=('kvendrik' 'my_org1' 'my_org2')
-source path_to_this_repo/git_clone_find
+export GCF_USERNAMES='kvendrik my_org1 my_org2'
+export PATH="$PATH:path_to_this_repo/git_clone_find"
 ```
-3. (Optional) Add an alias of your choosing to your rc to make interacting with the CLI quicker.
+
+### Advanced Options
+If you'd like you can set up an alias to access the CLI quicker and move into the cloned directory when a clone succeeds. To do this add the following function to your local rc file:
 ```bash
-alias gcf='git_clone_find'
+gcf() {
+  git_clone_find "$@" && 
+  [ -d "$(git_clone_find --last-clone-path)" ] &&
+  cd $(git_clone_find --last-clone-path)
+}
 ```
+When you do this make sure that your function name is not overwriting an existing function or alias.
 
 ## Help
 

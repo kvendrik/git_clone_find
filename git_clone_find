@@ -1,20 +1,24 @@
 #!/usr/bin/env bash
 
+SCRIPT_PATH="$(dirname "${BASH_SOURCE[0]}")"
+LAST_CLONE_PATH_FILE="$SCRIPT_PATH/.~last_cloned_path.txt"
+
 verbose=false
 first_log=true
 arguments=()
 
 print_help() {
   cat << EOF
-Usage: git_clone_find [-v|--verbose|-h|--help] <ssh_url_or_repo_name> [<folder_name>]
+Usage: git_clone_find [-v|--verbose] [-h|--help] [--version] [--last-clone-path] <ssh_url_or_repo_name> [<folder_name>]
 
 Finds Git repositories, clones them and moves into the folder.
 
 Flags:
 
--h | --help                  Display this help message
+-h | --help                  Prints this help message
 -v | --verbose               Verbose mode
---version                    Display the CLI's version
+--version                    Prints the CLI's version
+--last-clone-path            Prints the path to the last cloned repository
 
 Arguments:
 
@@ -54,6 +58,10 @@ construct_clone_url() {
   echo "git@github.com:$1.git"
 }
 
+save_clone_path() {
+  echo "$(pwd)/$1" > $LAST_CLONE_PATH_FILE
+}
+
 for argument in "$@"; do
   if [[ "$argument" == '--verbose' || "$argument" == '-v' ]]; then
     verbose=true
@@ -66,8 +74,15 @@ for argument in "$@"; do
   fi
 
   if [[ "$argument" == '--version' ]]; then
-    SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null 2>&1 && pwd)"
     cat "$SCRIPT_PATH/.version"
+    exit 0
+  fi
+
+  if [[ "$argument" == '--last-clone-path' ]]; then
+    if [ ! -f $LAST_CLONE_PATH_FILE ]; then
+      exit 1
+    fi
+    cat $LAST_CLONE_PATH_FILE
     exit 0
   fi
 
@@ -88,7 +103,8 @@ if [[ $repo_ssh_url =~ ^git@ ]]; then
   fi
 
   verbose=true
-  git_clone "$repo_ssh_url" "$folder_name" && cd "$folder_name" || exit 1
+  git_clone "$repo_ssh_url" "$folder_name" || exit 1
+  save_clone_path $folder_name
   exit 0
 fi
 
@@ -104,7 +120,8 @@ if [ "$split_repo_name" != '' ]; then
   log "Trying $clone_url. \e[2mCloning into $folder_name.\e[0m"
 
   verbose=true
-  git_clone "$clone_url" "$folder_name" && cd "$folder_name" || exit 1
+  git_clone "$clone_url" "$folder_name" || exit 1
+  save_clone_path $folder_name
   exit 0
 fi
 
@@ -126,7 +143,7 @@ for username in "${usernames[@]}"; do
   log "Trying $clone_url. \033[0;36mCloning into $folder_name.\033[0m"
 
   if git_clone "$clone_url" "$folder_name"; then
-    cd "$folder_name" || exit 1
+    save_clone_path $folder_name
     exit 0
   fi
 done
