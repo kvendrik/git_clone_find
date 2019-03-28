@@ -20,9 +20,10 @@ export PATH="$PATH:path_to_this_repo/git_clone_find"
 If you'd like you can set up an alias to access the CLI quicker and move into the cloned directory when a clone succeeds. To do this add the following function to your local rc file:
 ```bash
 gcf() {
-  git_clone_find "$@" && 
-  [ -d "$(git_clone_find --last-clone-path)" ] &&
-  cd $(git_clone_find --last-clone-path)
+  if git_clone_find "$@"; then
+    last_clone_path="$(git_clone_find --last-clone-path)"
+    [ -f "$last_clone_path" ] && cd "$last_clone_path"
+  fi
 }
 ```
 When you do this make sure that your function name is not overwriting an existing function or alias.

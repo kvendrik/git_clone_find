@@ -79,10 +79,10 @@ for argument in "$@"; do
   fi
 
   if [[ "$argument" == '--last-clone-path' ]]; then
-    if [ ! -f $LAST_CLONE_PATH_FILE ]; then
-      exit 1
+    if [ -f $LAST_CLONE_PATH_FILE ]; then
+      cat $LAST_CLONE_PATH_FILE
+      rm $LAST_CLONE_PATH_FILE
     fi
-    cat $LAST_CLONE_PATH_FILE
     exit 0
   fi
 
