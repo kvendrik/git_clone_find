@@ -59,7 +59,7 @@ construct_clone_url() {
 }
 
 save_clone_path() {
-  echo "$(pwd)/$1" > $LAST_CLONE_PATH_FILE
+  echo "$(pwd)/$1" > "$LAST_CLONE_PATH_FILE"
 }
 
 for argument in "$@"; do
@@ -79,9 +79,9 @@ for argument in "$@"; do
   fi
 
   if [[ "$argument" == '--last-clone-path' ]]; then
-    if [ -f $LAST_CLONE_PATH_FILE ]; then
-      cat $LAST_CLONE_PATH_FILE
-      rm $LAST_CLONE_PATH_FILE
+    if [ -f "$LAST_CLONE_PATH_FILE" ]; then
+      cat "$LAST_CLONE_PATH_FILE"
+      rm "$LAST_CLONE_PATH_FILE"
     fi
     exit 0
   fi
@@ -104,7 +104,7 @@ if [[ $repo_ssh_url =~ ^git@ ]]; then
 
   verbose=true
   git_clone "$repo_ssh_url" "$folder_name" || exit 1
-  save_clone_path $folder_name
+  save_clone_path "$folder_name"
   exit 0
 fi
 
@@ -121,7 +121,7 @@ if [ "$split_repo_name" != '' ]; then
 
   verbose=true
   git_clone "$clone_url" "$folder_name" || exit 1
-  save_clone_path $folder_name
+  save_clone_path "$folder_name"
   exit 0
 fi
 
@@ -136,14 +136,14 @@ if [[ -z "$folder_name" ]]; then
   folder_name="$repo_name"
 fi
 
-usernames=($GCF_USERNAMES)
+IFS=" " read -r -a usernames <<< "$GCF_USERNAMES"
 
 for username in "${usernames[@]}"; do
   clone_url=$(construct_clone_url "$username/$repo_name")
   log "Trying $clone_url. \033[0;36mCloning into $folder_name.\033[0m"
 
   if git_clone "$clone_url" "$folder_name"; then
-    save_clone_path $folder_name
+    save_clone_path "$folder_name"
     exit 0
   fi
 done
