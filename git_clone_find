@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SCRIPT_PATH="$(dirname "${BASH_SOURCE[0]}")"
-LAST_CLONE_PATH_FILE="$SCRIPT_PATH/.~last_cloned_path"
+LAST_CLONE_PATH_FILE="$SCRIPT_PATH/.~last_clone_path"
 
 verbose=false
 first_log=true
